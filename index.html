@@ -11,8 +11,11 @@
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
 
-        // Указываем Measurement ID вашего GA4-ресурса
-        gtag('config', 'G-BSJHP52DTT');
+        // Указываем Measurement ID и user_id
+        const userId = "12345"; // Пример user_id
+        gtag('config', 'G-BSJHP52DTT', {
+            user_id: userId
+        });
     </script>
 </head>
 <body>
