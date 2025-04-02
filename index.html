@@ -19,15 +19,15 @@
     <h1>Welcome to My Test Site</h1>
     <p>This is a simple page</p>
     <button id="testButton">Click Me</button>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BSJHP52DTT"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-
-        // Указываем Measurement ID вашего GA4-ресурса
-        gtag('config', 'G-BSJHP52DTT');
+        // Пример отправки пользовательского события
+        document.getElementById('testButton').addEventListener('click', function() {
+            console.log('Button clicked!');
+            gtag('event', 'button_click', {
+                event_category: 'engagement',
+                event_label: 'testButton'
+            });
+        });
     </script>
 </body>
 </html>
