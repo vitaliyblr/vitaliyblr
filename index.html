@@ -19,18 +19,20 @@
     </script>
 </head>
 <body>
-<form>
-    <label for="phone">Phone Number:</label>
+<div style="display: flex; align-items: center;">
+    <span style="padding: 8px; background-color: #f0f0f0; border: 1px solid #ccc; border-right: none;">+44</span>
     <input 
         type="text" 
         id="phone" 
         name="phone" 
-        pattern="^(44|\+44|0044)\d{10}$" 
-        title="Please enter a valid UK phone number in the format 44xxxxxxxxxx, +44xxxxxxxxxx, or 0044xxxxxxxxxx."
+        placeholder="7900123456"
+        pattern="\d{10}"
+        title="Please enter the remaining 10 digits of your UK phone number."
+        maxlength="10"
         required
+        style="padding: 8px; border: 1px solid #ccc; width: 200px;"
     >
-    <button type="submit">Submit</button>
-</form>
+</div>
     <script>
         // Пример отправки пользовательского события
         document.getElementById('testButton').addEventListener('click', function() {
