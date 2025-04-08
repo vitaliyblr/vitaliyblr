@@ -22,6 +22,18 @@
     <h1>Welcome to My Test Site</h1>
     <p>This is a simple page</p>
     <button id="testButton">Click Me</button>
+    <form>
+    <label for="phone">Phone Number:</label>
+    <input 
+        type="text" 
+        id="phone" 
+        name="phone" 
+        pattern="^(91|\+91|0091)\d{10}$" 
+        title="Please enter a valid phone number in the format 91xxxxxxxxxx, +91xxxxxxxxxx, or 0091xxxxxxxxxx."
+        required
+    >
+    <button type="submit">Submit</button>
+</form>
     <script>
         // Пример отправки пользовательского события
         document.getElementById('testButton').addEventListener('click', function() {
