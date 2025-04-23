@@ -1,47 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test site</title>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BSJHP52DTT"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-
-        // Указываем Measurement ID и user_id
-        const userId = "12345"; // Пример user_id
-        gtag('config', 'G-BSJHP52DTT', {
-            user_id: userId
-        });
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Пример с авторизацией и GA4</title>
+  
+  <!-- Подключаем gtag.js для Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BSJHP52DTT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-BSJHP52DTT');  // Замените на свой GA4 Measurement ID
+  </script>
 </head>
 <body>
-<div style="display: flex; align-items: center;">
-    <span style="padding: 8px; background-color: #f0f0f0; border: 1px solid #ccc; border-right: none;">+44</span>
-    <input 
-        type="text" 
-        id="phone" 
-        name="phone" 
-        placeholder="7900123456"
-        pattern="\d{10}"
-        title="Please enter the remaining 10 digits of your UK phone number."
-        maxlength="10"
-        required
-        style="padding: 8px; border: 1px solid #ccc; width: 200px;"
-    >
+
+<h1>Авторизация</h1>
+
+<!-- Форма для ввода данных пользователя -->
+<div id="login-form">
+  <input type="text" id="username" placeholder="Введите имя" required>
+  <input type="password" id="password" placeholder="Введите пароль" required>
+  <button onclick="login()">Войти</button>
 </div>
-    <script>
-        // Пример отправки пользовательского события
-        document.getElementById('testButton').addEventListener('click', function() {
-            console.log('Button clicked!');
-            gtag('event', 'button_click', {
-                event_category: 'engagement',
-                event_label: 'testButton'
-            });
-        });
-    </script>
+
+<!-- Сообщение об успешной авторизации -->
+<div id="welcome-message" style="display: none;">
+  <h2>Добро пожаловать, <span id="user-name"></span>!</h2>
+</div>
+
+<script>
+// Генерация UUID и сохранение его в localStorage
+function generateUUID() {
+  return 'user-' + Math.random().toString(36).substr(2, 9); // Простой UUID
+}
+
+// Проверка, существует ли уже UUID
+function getUUID() {
+  let uuid = localStorage.getItem('uuid');
+  if (!uuid) {
+    uuid = generateUUID();
+    localStorage.setItem('uuid', uuid);
+  }
+  return uuid;
+}
+
+// Отправка данных в GA4 (передача UUID или User ID)
+function sendDataToGA(userId) {
+  gtag('event', 'page_view', {
+    'user_id': userId  // Передаем User ID или UUID
+  });
+}
+
+// Авторизация пользователя
+function login() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+
+  // Простая проверка данных
+  if (username && password) {
+    // Симуляция логина и создание User ID
+    const userID = 'user_' + Math.random().toString(36).substr(2, 9);  // Имитация User ID из базы данных
+    localStorage.setItem('user_id', userID);  // Сохраняем User ID
+
+    // Отправка данных с User ID в GA4
+    sendDataToGA(userID);
+
+    // Показать сообщение с приветствием
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('welcome-message').style.display = 'block';
+    document.getElementById('user-name').textContent = username;
+
+  } else {
+    alert('Пожалуйста, заполните все поля.');
+  }
+}
+
+// Сначала отправляем данные с UUID
+sendDataToGA(getUUID());  // Это будет работать до авторизации
+</script>
+
 </body>
 </html>
