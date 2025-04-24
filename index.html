@@ -1,85 +1,75 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Пример с авторизацией и GA4</title>
-  
-  <!-- Подключаем gtag.js для Google Analytics 4 -->
+  <title>GA4 User ID Demo</title>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-BSJHP52DTT"></script>
   <script>
+    // UUID генератор
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+          v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    // Получаем UUID из localStorage или создаём
+    let anonId = localStorage.getItem('anon_uuid');
+    if (!anonId) {
+      anonId = generateUUID();
+      localStorage.setItem('anon_uuid', anonId);
+    }
+
+    // Переменная для текущего user_id
+    let currentUserId = anonId;
+
+    // Инициализация GA
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
+
     gtag('js', new Date());
-    gtag('config', 'G-BSJHP52DTT');  // Замените на свой GA4 Measurement ID
+    gtag('config', 'G-BSJHP52DTT', {
+      user_id: currentUserId
+    });
+
+    // Отправка события формы
+    function submitLead() {
+      gtag('event', 'lead_form_submit', {
+        user_id: currentUserId,
+        method: 'anonymous'
+      });
+      alert('Lead form sent as anonymous user!');
+    }
+
+    // Симуляция логина
+    function login() {
+      currentUserId = 'user-12345'; // Это ваш зарегистрированный user_id
+      gtag('config', 'G-BSJHP52DTT', {
+        user_id: currentUserId
+      });
+      gtag('event', 'login', {
+        method: 'manual'
+      });
+      alert('User logged in!');
+    }
+
+    // Повторная отправка формы после логина
+    function submitLeadLoggedIn() {
+      gtag('event', 'lead_form_submit', {
+        user_id: currentUserId,
+        method: 'registered'
+      });
+      alert('Lead form sent as logged-in user!');
+    }
   </script>
 </head>
 <body>
+  <h1>GA4 User ID Tracking Demo</h1>
 
-<h1>Авторизация</h1>
-
-<!-- Форма для ввода данных пользователя -->
-<div id="login-form">
-  <input type="text" id="username" placeholder="Введите имя" required>
-  <input type="password" id="password" placeholder="Введите пароль" required>
-  <button onclick="login()">Войти</button>
-</div>
-
-<!-- Сообщение об успешной авторизации -->
-<div id="welcome-message" style="display: none;">
-  <h2>Добро пожаловать, <span id="user-name"></span>!</h2>
-</div>
-
-<script>
-// Генерация UUID и сохранение его в localStorage
-function generateUUID() {
-  return 'user-' + Math.random().toString(36).substr(2, 9); // Простой UUID
-}
-
-// Проверка, существует ли уже UUID
-function getUUID() {
-  let uuid = localStorage.getItem('uuid');
-  if (!uuid) {
-    uuid = generateUUID();
-    localStorage.setItem('uuid', uuid);
-  }
-  return uuid;
-}
-
-// Отправка данных в GA4 (передача UUID или User ID)
-function sendDataToGA(userId) {
-  gtag('event', 'page_view', {
-    'user_id': userId  // Передаем User ID или UUID
-  });
-}
-
-// Авторизация пользователя
-function login() {
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-
-  // Простая проверка данных
-  if (username && password) {
-    // Симуляция логина и создание User ID
-    const userID = 'user_' + Math.random().toString(36).substr(2, 9);  // Имитация User ID из базы данных
-    localStorage.setItem('user_id', userID);  // Сохраняем User ID
-
-    // Отправка данных с User ID в GA4
-    sendDataToGA(userID);
-
-    // Показать сообщение с приветствием
-    document.getElementById('login-form').style.display = 'none';
-    document.getElementById('welcome-message').style.display = 'block';
-    document.getElementById('user-name').textContent = username;
-
-  } else {
-    alert('Пожалуйста, заполните все поля.');
-  }
-}
-
-// Сначала отправляем данные с UUID
-sendDataToGA(getUUID());  // Это будет работать до авторизации
-</script>
+  <button onclick="submitLead()">Submit Lead (Anonymous)</button>
+  <button onclick="login()">Login</button>
+  <button onclick="submitLeadLoggedIn()">Submit Lead (Logged-in)</button>
 
 </body>
 </html>
