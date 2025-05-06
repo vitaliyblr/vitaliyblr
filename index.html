@@ -2,74 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GA4 User ID Demo</title>
+  <title>GA4 User ID Linking Demo</title>
+
+  <!-- Подключаем GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-BSJHP52DTT"></script>
   <script>
     // UUID генератор
     function generateUUID() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0,
-          v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
     }
 
-    // Получаем UUID из localStorage или создаём
+    // Получаем или создаём UUID для анонимного пользователя
     let anonId = localStorage.getItem('anon_uuid');
     if (!anonId) {
       anonId = generateUUID();
       localStorage.setItem('anon_uuid', anonId);
     }
 
-    // Переменная для текущего user_id
+    // Начинаем с анонимного user_id
     let currentUserId = anonId;
+    let isLoggedIn = false;
 
-    // Инициализация GA
+    // Google Analytics инициализация
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
 
     gtag('js', new Date());
+
+    // Первичная инициализация — анонимный UUID
     gtag('config', 'G-BSJHP52DTT', {
-      user_id: currentUserId
+      user_id: currentUserId,
+      debug_mode: true
     });
 
-    // Отправка события формы
-    function submitLead() {
+    // Отправка события как анонимный пользователь
+    function submitLeadAnonymous() {
       gtag('event', 'lead_form_submit', {
-        user_id: currentUserId,
         method: 'anonymous'
       });
-      alert('Lead form sent as anonymous user!');
+      alert(`Lead submitted anonymously with UUID: ${currentUserId}`);
     }
 
     // Симуляция логина
-    function login() {
-      currentUserId = 'user-12345'; // Это ваш зарегистрированный user_id
+    function loginUser() {
+      // Связываем UUID с user_id (на стороне сервера это важно!)
+      const registeredId = 'user-12345'; // Уникальный ID зарегистрированного пользователя
+      console.log(`Linking anon UUID ${anonId} → user_id ${registeredId}`);
+      
+      // Обновляем user_id для GA
+      currentUserId = registeredId;
+      isLoggedIn = true;
+
+      // Принудительно пересоздаём сессию (новый user_id)
       gtag('config', 'G-BSJHP52DTT', {
-        user_id: currentUserId
+        user_id: currentUserId,
+        send_page_view: false,
+        debug_mode: true
       });
-      gtag('event', 'login', {
-        method: 'manual'
-      });
-      alert('User logged in!');
+
+      gtag('event', 'page_view'); // вручную отправляем page_view
+      gtag('event', 'login', { method: 'manual' });
+
+      alert(`User logged in as: ${currentUserId}`);
     }
 
-    // Повторная отправка формы после логина
-    function submitLeadLoggedIn() {
+    // Отправка события после логина
+    function submitLeadRegistered() {
       gtag('event', 'lead_form_submit', {
-        user_id: currentUserId,
         method: 'registered'
       });
-      alert('Lead form sent as logged-in user!');
+      alert(`Lead submitted as registered user: ${currentUserId}`);
     }
   </script>
 </head>
 <body>
-  <h1>GA4 User ID Tracking Demo</h1>
+  <h2>GA4 User ID Linking Demo</h2>
+  <p><strong>1.</strong> Отправь событие как аноним<br>
+     <strong>2.</strong> Нажми "Login" для авторизации<br>
+     <strong>3.</strong> Отправь событие как зарегистрированный пользователь</p>
 
-  <button onclick="submitLead()">Submit Lead (Anonymous)</button>
-  <button onclick="login()">Login</button>
-  <button onclick="submitLeadLoggedIn()">Submit Lead (Logged-in)</button>
-
+  <button onclick="submitLeadAnonymous()">Submit Lead (Anonymous)</button>
+  <button onclick="loginUser()">Login</button>
+  <button onclick="submitLeadRegistered()">Submit Lead (Registered)</button>
 </body>
 </html>
