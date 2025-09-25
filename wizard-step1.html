@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Wizard Step 1</title>
-  <!-- Подключаем GA4 -->
+  <!-- GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-BSJHP52DTT"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -11,13 +11,25 @@
     gtag('js', new Date());
     gtag('config', 'G-BSJHP52DTT');
 
-    // Событие просмотра первого шага
+    // Событие "просмотр шага"
     gtag('event', 'wizard_step_1_view', { step: 1 });
+
+    // Функция отправки выбранного ответа
+    function sendAnswer(answer) {
+      gtag('event', 'wizard_step_1_answer', {
+        step: 1,
+        answer: answer
+      });
+      // Переход на следующий шаг
+      window.location.href = "wizard-step2.html";
+    }
   </script>
 </head>
 <body>
   <h1>Wizard: Шаг 1</h1>
-  <p>Вопрос 1: ...</p>
-  <a href="wizard-step2.html">Далее →</a>
+  <p>Вопрос 1: Какой вариант выберешь?</p>
+
+  <button onclick="sendAnswer('A')">Вариант A</button>
+  <button onclick="sendAnswer('B')">Вариант B</button>
 </body>
 </html>
