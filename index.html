@@ -1,92 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>GA4 User ID Linking Demo</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mini Shop — Home</title>
+<link rel="stylesheet" href="styles.css">
 
-  <!-- Подключаем GA4 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BSJHP52DTT"></script>
-  <script>
-    // UUID генератор
-    function generateUUID() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      });
-    }
 
-    // Получаем или создаём UUID для анонимного пользователя
-    let anonId = localStorage.getItem('anon_uuid');
-    if (!anonId) {
-      anonId = generateUUID();
-      localStorage.setItem('anon_uuid', anonId);
-    }
+<!-- GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BSJHP52DTT"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-BSJHP52DTT');
 
-    // Начинаем с анонимного user_id
-    let currentUserId = anonId;
-    let isLoggedIn = false;
 
-    // Google Analytics инициализация
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
+// Page view event for home
+gtag('event', 'home_view');
 
-    gtag('js', new Date());
 
-    // Первичная инициализация — анонимный UUID
-    gtag('config', 'G-BSJHP52DTT', {
-      user_id: currentUserId,
-      debug_mode: true
-    });
-
-    // Отправка события как анонимный пользователь
-    function submitLeadAnonymous() {
-      gtag('event', 'lead_form_submit', {
-        method: 'anonymous'
-      });
-      alert(`Lead submitted anonymously with UUID: ${currentUserId}`);
-    }
-
-    // Симуляция логина
-    function loginUser() {
-      // Связываем UUID с user_id (на стороне сервера это важно!)
-      const registeredId = 'user-12345'; // Уникальный ID зарегистрированного пользователя
-      console.log(`Linking anon UUID ${anonId} → user_id ${registeredId}`);
-      
-      // Обновляем user_id для GA
-      currentUserId = registeredId;
-      isLoggedIn = true;
-
-      // Принудительно пересоздаём сессию (новый user_id)
-      gtag('config', 'G-BSJHP52DTT', {
-        user_id: currentUserId,
-        send_page_view: false,
-        debug_mode: true
-      });
-
-      gtag('event', 'page_view'); // вручную отправляем page_view
-      gtag('event', 'login', { method: 'manual' });
-
-      alert(`User logged in as: ${currentUserId}`);
-    }
-
-    // Отправка события после логина
-    function submitLeadRegistered() {
-      gtag('event', 'lead_form_submit', {
-        method: 'registered'
-      });
-      alert(`Lead submitted as registered user: ${currentUserId}`);
-    }
-  </script>
+// Product list viewed
+gtag('event', 'product_list_view', {
+list_name: 'home_featured'
+});
+</script>
 </head>
 <body>
-  <h2>GA4 User ID Linking Demo</h2>
-  <p><strong>1.</strong> Отправь событие как аноним<br>
-     <strong>2.</strong> Нажми "Login" для авторизации<br>
-     <strong>3.</strong> Отправь событие как зарегистрированный пользователь</p>
+<header>
+<h1>Mini Shop</h1>
+<a class="cart-link" href="cart.html">Cart (<span id="cart-count">0</span>)</a>
+</header>
 
-  <button onclick="submitLeadAnonymous()">Submit Lead (Anonymous)</button>
-  <button onclick="loginUser()">Login</button>
-  <button onclick="submitLeadRegistered()">Submit Lead (Registered)</button>
+
+<main>
+<h2>Featured products</h2>
+<div class="products">
+<div class="product">
+<h3>Product Alpha</h3>
+<p>Price: $19.99</p>
+<a href="pdp1.html" class="btn">View product</a>
+</div>
+
+
+<div class="product">
+<h3>Product Beta</h3>
+<p>Price: $29.99</p>
+<a href="pdp2.html" class="btn">View product</a>
+</div>
+</div>
+</main>
+
+
+<script src="shop.js"></script>
+<script>
+// update cart count on load
+document.getElementById('cart-count').textContent = shop.cartCount();
+</script>
 </body>
 </html>
