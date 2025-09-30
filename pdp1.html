@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Product Alpha</title>
+<link rel="stylesheet" href="styles.css">
+
+
+<!-- GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BSJHP52DTT"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-BSJHP52DTT');
+
+
+var PRODUCT = { id: 'alpha-001', name: 'Product Alpha', price: 19.99 };
+gtag('event', 'product_view', {
+item_id: PRODUCT.id,
+item_name: PRODUCT.name,
+price: PRODUCT.price
+});
+</script>
+</head>
+<body>
+<header>
+<h1>Product Alpha</h1>
+<a class="cart-link" href="cart.html">Cart (<span id="cart-count">0</span>)</a>
+</header>
+
+
+<main>
+<div class="product-detail">
+<h2>Product Alpha</h2>
+<p>Очень классный продукт.</p>
+<p>Price: $19.99</p>
+
+
+<button id="add" class="btn">Add to cart</button>
+</div>
+</main>
+
+
+<script src="shop.js"></script>
+<script>
+document.getElementById('cart-count').textContent = shop.cartCount();
+
+
+document.getElementById('add').addEventListener('click', function(){
+shop.addToCart({id: PRODUCT.id, name: PRODUCT.name, price: PRODUCT.price});
+
+
+// send GA4 add_to_cart event with product params
+gtag('event', 'add_to_cart', {
+item_id: PRODUCT.id,
+item_name: PRODUCT.name,
+price: PRODUCT.price,
+quantity: 1
+});
+
+
+// small visual feedback
+alert('Added to cart');
+document.getElementById('cart-count').textContent = shop.cartCount();
+});
+</script>
+</body>
+</html>
